@@ -2,7 +2,7 @@ import BraintreeCore
 
 @objc public class BTPayPalNativeClient: NSObject {
 
-    let apiClient: BTAPIClient
+    // MARK: - Public
 
     /**
      Domain for PayPal errors.
@@ -60,6 +60,18 @@ import BraintreeCore
             return
         }
 
+        constructApprovalURL(with: request) { approvalURL, error in
+            // continue!
+        }
+
+
+    }
+
+    // MARK: - Internal
+
+    private let apiClient: BTAPIClient
+
+    func constructApprovalURL(with request: BTPayPalNativeRequest, completion: @escaping (URL?, NSError?) -> Void) {
         apiClient.fetchOrReturnRemoteConfiguration { configuration, error in
             if let err = error as NSError? {
                 completion(nil, err)
@@ -78,6 +90,7 @@ import BraintreeCore
 
             self.apiClient.post(request.hermesPath, parameters: request.parameters(with: config)) { json, response, error in
                 if var err = error as NSError? {
+                    // TODO: are these errorDetails useful for merchant-facing errors? Should we continue parsing this error or instead return a static merchant-friendly message.
                     if let errorJSON = err.userInfo[NSLocalizedDescriptionKey].map({ BTJSON(value: $0) }),
                        let issue = errorJSON["paymentResources"]["errorDetails"].asArray()?.first?["issue"].asString(),
                        err.userInfo[NSLocalizedDescriptionKey] == nil {
@@ -89,7 +102,34 @@ import BraintreeCore
                     completion(nil, err)
                     return
                 }
+
+                var approvalURL: URL
+                if let url = json?["paymentResource"]["redirectUrl"].asURL() {
+                    approvalURL = url
+                } else if let url = json?["agreementSetup"]["approvalUrl"].asURL() {
+                    approvalURL = url
+                } else {
+                    let error = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                        code: ErrorType.unknown.rawValue,
+                                        userInfo: [NSLocalizedDescriptionKey: "Failed to fetch PayPal approvalURL."])
+                    completion(nil, error)
+                    return
+                }
+
+                if let checkoutRequest = request as? BTPayPalNativeCheckoutRequest,
+                   var approvalURLComponents = URLComponents(url: approvalURL, resolvingAgainstBaseURL: false),
+                   !checkoutRequest.userActionAsString.isEmpty {
+                    let userActionQueryItem = URLQueryItem(name: "useraction", value: checkoutRequest.userActionAsString)
+                    var queryItems = approvalURLComponents.queryItems ?? []
+                    queryItems.append(userActionQueryItem)
+                    approvalURLComponents.queryItems = queryItems
+                    if let url = approvalURLComponents.url {
+                        approvalURL = url
+                    }
+                }
+                completion(approvalURL, nil)
             }
         }
     }
+    
 }

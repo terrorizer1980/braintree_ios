@@ -154,6 +154,7 @@ typedef NS_ENUM(NSInteger, BTAPIClientHTTPType) {
  :nodoc:
  Sends this event and all queued analytics events. Use `queueAnalyticsEvent` for low priority events.
 */
+// TODO: how do we want to communicate that merchants shouldn't use this? Is there another place we can house this function to make the API more clear?
 - (void)sendAnalyticsEvent:(NSString *)eventName;
 
 /**
