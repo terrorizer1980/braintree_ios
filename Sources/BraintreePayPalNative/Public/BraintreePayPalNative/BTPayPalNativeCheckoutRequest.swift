@@ -74,7 +74,10 @@ import BraintreeCore
 
     // MARK: - Internal
 
-    let hermesPath = "v1/paypal_hermes/create_payment_resource"
+    override var hermesPath: String {
+        "v1/paypal_hermes/create_payment_resource"
+    }
+
     let paymentType = BTPayPalNativeRequest.PaymentType.checkout
 
     var intentAsString: String {

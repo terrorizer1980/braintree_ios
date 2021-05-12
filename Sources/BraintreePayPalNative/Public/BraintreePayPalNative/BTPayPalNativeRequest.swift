@@ -121,6 +121,10 @@ import BraintreeCore
         }
     }
 
+    var hermesPath: String {
+        fatalError("hermesPath must be overridden by subclasses")
+    }
+
     func parameters(with configuration: BTConfiguration) -> [String : Any] {
         var parameters: [String : Any] = [:]
         var experienceProfile: [String : Any] = [:]

@@ -15,7 +15,10 @@ import BraintreeCore
 
     // MARK: - Internal
 
-    let hermesPath = "v1/paypal_hermes/setup_billing_agreement"
+    override var hermesPath: String {
+        "v1/paypal_hermes/setup_billing_agreement"
+    }
+
     let paymentType = BTPayPalNativeRequest.PaymentType.vault
 
     override func parameters(with configuration: BTConfiguration) -> [String : Any] {

@@ -60,31 +60,36 @@ import BraintreeCore
             return
         }
 
-        apiClient.fetchOrReturnRemoteConfiguration { config, error in
+        apiClient.fetchOrReturnRemoteConfiguration { configuration, error in
             if let err = error as NSError? {
                 completion(nil, err)
                 return
             }
 
-            // check if configuration is nil
-
-            if !config.json["paypalEnabled"].isTrue {
-
+            guard let config = configuration, config.json["paypalEnabled"].isTrue else {
+                self.apiClient.sendAnalyticsEvent("ios.paypal-otc.preflight.disabled") // TODO: - change analytics events for native flow?
+                let payPalDisabledError = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                                  code: ErrorType.disabled.rawValue,
+                                                  userInfo: [NSLocalizedDescriptionKey: "PayPal is not enabled for this merchant",
+                                                             NSLocalizedRecoverySuggestionErrorKey: "Enable PayPal for this merchant in the Braintree Control Panel"])
+                completion(nil, payPalDisabledError)
+                return
             }
 
-//            if (![configuration[@"paypalEnabled"] isTrue]) {
-//                [self.apiClient sendAnalyticsEvent:@"ios.paypal-otc.preflight.disabled"];
-//                if (error != NULL) {
-//                    *error = [NSError errorWithDomain:BTPayPalDriverErrorDomain
-//                                                 code:BTPayPalDriverErrorTypeDisabled
-//                                             userInfo:@{ NSLocalizedDescriptionKey: @"PayPal is not enabled for this merchant",
-//                                                         NSLocalizedRecoverySuggestionErrorKey: @"Enable PayPal for this merchant in the Braintree Control Panel" }];
-//                }
-//                return NO;
-//            }
-//
-//            return YES;
+            self.apiClient.post(request.hermesPath, parameters: request.parameters(with: config)) { json, response, error in
+                if var err = error as NSError? {
+                    if let errorJSON = err.userInfo[NSLocalizedDescriptionKey].map({ BTJSON(value: $0) }),
+                       let issue = errorJSON["paymentResources"]["errorDetails"].asArray()?.first?["issue"].asString(),
+                       err.userInfo[NSLocalizedDescriptionKey] == nil {
+                        var userInfo = err.userInfo
+                        userInfo[NSLocalizedDescriptionKey] = issue
+                        err = NSError(domain: err.domain, code: err.code, userInfo: userInfo)
+                    }
 
+                    completion(nil, err)
+                    return
+                }
+            }
         }
     }
 }

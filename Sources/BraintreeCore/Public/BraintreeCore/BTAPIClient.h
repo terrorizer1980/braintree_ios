@@ -151,6 +151,12 @@ typedef NS_ENUM(NSInteger, BTAPIClientHTTPType) {
   completion:(nullable void(^)(BTJSON * _Nullable body, NSHTTPURLResponse * _Nullable response, NSError * _Nullable error))completionBlock;
 
 /**
+ :nodoc:
+ Sends this event and all queued analytics events. Use `queueAnalyticsEvent` for low priority events.
+*/
+- (void)sendAnalyticsEvent:(NSString *)eventName;
+
+/**
  Base initializer - do not use.
  */
 - (instancetype)init __attribute__((unavailable("Use initWithAuthorization: instead.")));
