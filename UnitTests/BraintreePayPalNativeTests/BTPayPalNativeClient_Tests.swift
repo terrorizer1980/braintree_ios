@@ -170,26 +170,4 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
-    func testConstructApprovalURL_whenCheckoutRequest_andUserActionSet_returnsApprovalURLWithUserAction() {
-        let jsonString =
-            """
-            {
-                "agreementSetup": {
-                    "approvalUrl": "my-url.com"
-                }
-            }
-            """
-        mockAPIClient.cannedResponseBody = BTJSON(data: jsonString.data(using: String.Encoding.utf8)!)
-
-        let expectation = self.expectation(description: "Constructs approvalURL")
-        let request = BTPayPalNativeCheckoutRequest(amount: "12")
-        request.userAction = .commit
-        payPalNativeClient.constructApprovalURL(with: request) { (url, error) in
-            XCTAssertNil(error)
-            XCTAssertEqual(url?.absoluteString, "my-url.com?useraction=commit")
-            expectation.fulfill()
-        }
-        self.waitForExpectations(timeout: 1)
-    }
-
 }

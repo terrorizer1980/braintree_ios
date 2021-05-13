@@ -116,17 +116,6 @@ import BraintreeCore
                     return
                 }
 
-                if let checkoutRequest = request as? BTPayPalNativeCheckoutRequest,
-                   var approvalURLComponents = URLComponents(url: approvalURL, resolvingAgainstBaseURL: false),
-                   !checkoutRequest.userActionAsString.isEmpty {
-                    let userActionQueryItem = URLQueryItem(name: "useraction", value: checkoutRequest.userActionAsString)
-                    var queryItems = approvalURLComponents.queryItems ?? []
-                    queryItems.append(userActionQueryItem)
-                    approvalURLComponents.queryItems = queryItems
-                    if let url = approvalURLComponents.url {
-                        approvalURL = url
-                    }
-                }
                 completion(approvalURL, nil)
             }
         }
