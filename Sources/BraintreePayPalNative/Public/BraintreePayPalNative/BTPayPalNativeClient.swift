@@ -1,4 +1,5 @@
 import BraintreeCore
+import PayPalCheckout
 
 @objc public class BTPayPalNativeClient: NSObject {
 
@@ -61,52 +62,20 @@ import BraintreeCore
         }
 
         constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
-            // code
+            guard let nativeRequest = nativeSDKRequest, error == nil else {
+                // call completion with error
+                return
+            }
+
+            let payPalNativeConfig = CheckoutConfig(clientID: nativeRequest.payPalClientID,
+                                                    returnUrl: request.payPalReturnURL,
+                                                    createOrder: nil,
+                                                    onApprove: nil,
+                                                    onCancel: nil,
+                                                    onError: nil,
+                                                    environment: nativeRequest.environment)
         }
-
-        // TODO: use this token to pass into Native XO SDK
-        // TODO: confirm that we can ommit the call to PPDataCollector for the Native XO flow
-
-        //            NSString *pairingID = [self.class tokenFromApprovalURL:self.approvalUrl];
-        //
-        //            self.clientMetadataID = [PPDataCollector clientMetadataID:pairingID];
-        //
-        //            BOOL analyticsSuccess = error ? NO : YES;
-        //
-        //            [self sendAnalyticsEventForInitiatingOneTouchForPaymentType:request.paymentType withSuccess:analyticsSuccess];
-        //
-        //            BOOL isPayPalCheckoutRequest = [request isKindOfClass:BTPayPalCheckoutRequest.class];
-        //
-        //            if (isPayPalCheckoutRequest && ((BTPayPalCheckoutRequest *)request).useNativeUI) {
-        //                [self startPayPalNativeCheckout:(BTPayPalCheckoutRequest *)request
-        //                                  configuration:configuration
-        //                                      pairingId:pairingID
-        //                                     completion:completionBlock];
-        //            } else {
-        //                [self handlePayPalRequestWithURL:approvalUrl
-        //                                           error:error
-        //                                     paymentType:request.paymentType
-        //                                      completion:completionBlock];
     }
-
-
-//    - (void)sendAnalyticsEventForInitiatingOneTouchForPaymentType:(BTPayPalPaymentType)paymentType
-//                                                      withSuccess:(BOOL)success {
-//        NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.initiate.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
-//        [self.apiClient sendAnalyticsEvent:eventName];
-//
-//        if ([self.payPalRequest isKindOfClass:BTPayPalCheckoutRequest.class] && ((BTPayPalCheckoutRequest *)self.payPalRequest).offerPayLater) {
-//            NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.paylater.offered.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
-//
-//            [self.apiClient sendAnalyticsEvent:eventName];
-//        }
-//
-//        if ([self.payPalRequest isKindOfClass:BTPayPalVaultRequest.class] && ((BTPayPalVaultRequest *)self.payPalRequest).offerCredit) {
-//            NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.credit.offered.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
-//
-//            [self.apiClient sendAnalyticsEvent:eventName];
-//        }
-//    }
 
     // MARK: - Internal
 
