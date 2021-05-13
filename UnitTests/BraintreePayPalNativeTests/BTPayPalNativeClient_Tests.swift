@@ -11,9 +11,10 @@ class BTPayPalNativeClient_Tests: XCTestCase {
     override func setUp() {
         mockAPIClient = MockAPIClient(authorization: "development_tokenization_key")!
         mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
+            "environment": "sandbox",
             "paypalEnabled": true,
             "paypal": [
-                "environment": "offline"
+                "clientId": "some-client-id"
             ]
         ])
 
@@ -35,18 +36,18 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         waitForExpectations(timeout: 1)
     }
 
-    // MARK: - constructApprovalURL
+    // MARK: - constructNativeSDKRequest
 
-    func testConstructApprovalURL_whenRemoteConfigurationFetchFails_callsBackWithConfigurationError() {
+    func testConstructNativeSDKRequest_whenRemoteConfigurationFetchFails_callsBackWithConfigurationError() {
         mockAPIClient.cannedConfigurationResponseBody = nil
         mockAPIClient.cannedConfigurationResponseError = NSError(domain: "", code: 0, userInfo: nil)
 
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         let expectation = self.expectation(description: "Checkout fails with error")
 
-        payPalNativeClient.constructApprovalURL(with: request) { (nonce, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
             guard let error = error as NSError? else { XCTFail(); return }
-            XCTAssertNil(nonce)
+            XCTAssertNil(nativeSDKRequest)
             XCTAssertEqual(error, self.mockAPIClient.cannedConfigurationResponseError)
             expectation.fulfill()
         }
@@ -54,7 +55,26 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
-    func testConstructApprovalURL_whenPayPalNotEnabledInConfiguration_callsBackWithError() {
+    func testConstructNativeSDKRequest_whenConfigurationIsNil_callsBackWithError() {
+        mockAPIClient.cannedConfigurationResponseBody = nil
+
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
+        let expectation = self.expectation(description: "Checkout fails with error")
+
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            guard let error = error as NSError? else { XCTFail(); return }
+            XCTAssertNil(nativeSDKRequest)
+            XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
+            XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.unknown.rawValue)
+            XCTAssertEqual(error.localizedDescription, "Failed to fetch Braintree configuration.")
+
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 1)
+    }
+
+    func testConstructNativeSDKRequest_whenPayPalNotEnabledInConfiguration_callsBackWithError() {
         mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
             "paypalEnabled": false
         ])
@@ -62,9 +82,9 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         let expectation = self.expectation(description: "Checkout fails with error")
 
-        payPalNativeClient.constructApprovalURL(with: request) { (nonce, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
             guard let error = error as NSError? else { XCTFail(); return }
-            XCTAssertNil(nonce)
+            XCTAssertNil(nativeSDKRequest)
             XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
             XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.disabled.rawValue)
             XCTAssertEqual(error.localizedDescription, "PayPal is not enabled for this merchant")
@@ -76,15 +96,15 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
-    func testConstructApprovalURL_whenPayPalEnabledMissingFromConfiguration_callsBackWithError() {
+    func testConstructNativeSDKRequest_whenPayPalEnabledMissingFromConfiguration_callsBackWithError() {
         mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [])
 
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         let expectation = self.expectation(description: "Checkout fails with error")
 
-        payPalNativeClient.constructApprovalURL(with: request) { (nonce, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
             guard let error = error as NSError? else { XCTFail(); return }
-            XCTAssertNil(nonce)
+            XCTAssertNil(nativeSDKRequest)
             XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
             XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.disabled.rawValue)
             XCTAssertEqual(error.localizedDescription, "PayPal is not enabled for this merchant")
@@ -96,13 +116,83 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
-    // MARK: - constructApprovalURL - POST request to Hermes endpoint
+    func testConstructNativeSDKRequest_whenPayPalClientIDMissingFromConfiguration_callsBackWithError() {
+        mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
+            "paypalEnabled": true
+        ])
 
-    func testConstructApprovalURL_whenRemoteConfigurationFetchSucceeds_postsToCorrectEndpoint() {
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
+        let expectation = self.expectation(description: "Checkout fails with error")
+
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            guard let error = error as NSError? else { XCTFail(); return }
+            XCTAssertNil(nativeSDKRequest)
+            XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
+            XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.disabled.rawValue)
+            XCTAssertEqual(error.localizedDescription, "Failed to fetch PayPalClientID from Braintree configuration.")
+
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 1)
+    }
+
+    func testConstructNativeSDKRequest_whenEnvironmentMissingFromConfiguration_callsBackWithError() {
+        mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
+            "paypalEnabled": true,
+            "paypal": [
+                "clientId": "some-client-id"
+            ]
+        ])
+
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
+        let expectation = self.expectation(description: "Checkout fails with error")
+
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            guard let error = error as NSError? else { XCTFail(); return }
+            XCTAssertNil(nativeSDKRequest)
+            XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
+            XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.unknown.rawValue)
+            XCTAssertEqual(error.localizedDescription, "PayPal Native Checkout failed because an invalid environment identifier was retrieved from the configuration.")
+
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 1)
+    }
+
+    func testConstructNativeSDKRequest_whenEnvironmentIsNotProdOrSandbox_callsBackWithError() {
+        mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
+            "environment": "invalid-environment",
+            "paypalEnabled": true,
+            "paypal": [
+                "clientId": "some-client-id"
+            ]
+        ])
+
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
+        let expectation = self.expectation(description: "Checkout fails with error")
+
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            guard let error = error as NSError? else { XCTFail(); return }
+            XCTAssertNil(nativeSDKRequest)
+            XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
+            XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.unknown.rawValue)
+            XCTAssertEqual(error.localizedDescription, "PayPal Native Checkout failed because an invalid environment identifier was retrieved from the configuration.")
+
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 1)
+    }
+
+    // MARK: - constructNativeSDKRequest - POST request to Hermes endpoint
+
+    func testConstructNativeSDKRequest_whenRemoteConfigurationFetchSucceeds_postsToCorrectEndpoint() {
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.intent = .sale
 
-        payPalNativeClient.constructApprovalURL(with: request) { _,_  -> Void in }
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (_, _) in }
 
         XCTAssertEqual("v1/paypal_hermes/create_payment_resource", mockAPIClient.lastPOSTPath)
         guard let lastPostParameters = mockAPIClient.lastPOSTParameters else { XCTFail(); return }
@@ -113,26 +203,34 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         XCTAssertEqual(lastPostParameters["cancel_url"] as? String, "sdk.ios.braintree://onetouch/v1/cancel")
     }
 
-    func testConstructApprovalURL_whenPaymentResourceCreationFails_callsBackWithError() {
+    func testConstructNativeSDKRequest_whenPaymentResourceCreationFails_callsBackWithError() {
         mockAPIClient.cannedResponseError = NSError(domain: "", code: 0, userInfo: nil)
 
         let dummyRequest = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         let expectation = self.expectation(description: "Checkout fails with error")
-        payPalNativeClient.constructApprovalURL(with: dummyRequest) { (_, error) -> Void in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: dummyRequest) { (_, error) -> Void in
             XCTAssertEqual(error! as NSError, self.mockAPIClient.cannedResponseError!)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 1)
     }
 
-    // MARK: - constructApprovalURL - approvalURL
+    // MARK: - constructNativeSDKRequest - request
 
-    func testConstructApprovalURL_whenResponseContainsPaymentResourceURL_returnsApprovalURL() {
+    func testConstructNativeSDKRequest_whenEnvironmentIsProd_returnsRequestWithEnvironment() {
+        mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [
+            "environment": "production",
+            "paypalEnabled": true,
+            "paypal": [
+                "clientId": "some-client-id"
+            ]
+        ])
+
         let jsonString =
             """
             {
                 "paymentResource": {
-                    "redirectUrl": "my-url.com"
+                    "redirectUrl": "my-url.com?token=some-token"
                 }
             }
             """
@@ -140,20 +238,45 @@ class BTPayPalNativeClient_Tests: XCTestCase {
 
         let expectation = self.expectation(description: "Constructs approvalURL")
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "12")
-        payPalNativeClient.constructApprovalURL(with: request) { (url, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
             XCTAssertNil(error)
-            XCTAssertEqual(url?.absoluteString, "my-url.com")
+            XCTAssertEqual(nativeSDKRequest?.orderID, "some-token")
+            XCTAssertEqual(nativeSDKRequest?.payPalClientID, "some-client-id")
+            XCTAssertEqual(nativeSDKRequest?.environment, 0)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 1)
     }
 
-    func testConstructApprovalURL_whenResponseContainsAgreementSetupURL_returnsApprovalURL() {
+    func testConstructNativeSDKRequest_whenHermesReturnsPaymentResourceURL_returnsRequestWithOrderID() {
+        let jsonString =
+            """
+            {
+                "paymentResource": {
+                    "redirectUrl": "my-url.com?token=some-token"
+                }
+            }
+            """
+        mockAPIClient.cannedResponseBody = BTJSON(data: jsonString.data(using: String.Encoding.utf8)!)
+
+        let expectation = self.expectation(description: "Constructs approvalURL")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "12")
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            XCTAssertNil(error)
+            XCTAssertEqual(nativeSDKRequest?.orderID, "some-token")
+            XCTAssertEqual(nativeSDKRequest?.payPalClientID, "some-client-id")
+            XCTAssertEqual(nativeSDKRequest?.environment, 1)
+            expectation.fulfill()
+        }
+        self.waitForExpectations(timeout: 1)
+    }
+
+    func testConstructNativeSDKRequest_whenHermesReturnsAgreementSetupURL_returnsRequestWithOrderID() {
         let jsonString =
             """
             {
                 "agreementSetup": {
-                    "approvalUrl": "my-url.com"
+                    "approvalUrl": "my-url.com?ba_token=some-token"
                 }
             }
             """
@@ -161,15 +284,17 @@ class BTPayPalNativeClient_Tests: XCTestCase {
 
         let expectation = self.expectation(description: "Constructs approvalURL")
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "12")
-        payPalNativeClient.constructApprovalURL(with: request) { (url, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
             XCTAssertNil(error)
-            XCTAssertEqual(url?.absoluteString, "my-url.com")
+            XCTAssertEqual(nativeSDKRequest?.orderID, "some-token")
+            XCTAssertEqual(nativeSDKRequest?.payPalClientID, "some-client-id")
+            XCTAssertEqual(nativeSDKRequest?.environment, 1)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 1)
     }
 
-    func testConstructApprovalURL_whenCannotParseApprovalURL_callsCompletionWithError() {
+    func testConstructNativeSDKRequest_whenCannotParseApprovalURL_callsCompletionWithError() {
         let jsonString =
             """
             {
@@ -182,7 +307,8 @@ class BTPayPalNativeClient_Tests: XCTestCase {
 
         let expectation = self.expectation(description: "Constructs approvalURL")
         let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "12")
-        payPalNativeClient.constructApprovalURL(with: request) { (url, error) in
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            XCTAssertNil(nativeSDKRequest)
             XCTAssertEqual(error?.code, BTPayPalNativeClient.ErrorType.unknown.rawValue)
             XCTAssertEqual(error?.localizedDescription, "Failed to fetch PayPal approvalURL.")
             expectation.fulfill()
@@ -190,4 +316,25 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
+    func testConstructNativeSDKRequest_whenApprovalURLDoesNotContainOrderID_callsCompletionWithError() {
+        let jsonString =
+            """
+            {
+                "paymentResource": {
+                    "redirectUrl": "my-url.com"
+                }
+            }
+            """
+        mockAPIClient.cannedResponseBody = BTJSON(data: jsonString.data(using: String.Encoding.utf8)!)
+
+        let expectation = self.expectation(description: "Calls completion with missing order id error")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "12")
+        payPalNativeClient.constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            XCTAssertNil(nativeSDKRequest)
+            XCTAssertEqual(error?.code, BTPayPalNativeClient.ErrorType.unknown.rawValue)
+            XCTAssertEqual(error?.localizedDescription, "Failed to fetch PayPal order id.")
+            expectation.fulfill()
+        }
+        self.waitForExpectations(timeout: 1)
+    }
 }

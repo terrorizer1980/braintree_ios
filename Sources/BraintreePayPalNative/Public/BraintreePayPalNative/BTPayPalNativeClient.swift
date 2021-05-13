@@ -37,12 +37,6 @@ import BraintreeCore
         self.apiClient = apiClient
     }
 
-    struct BTPayPalNativeSDKRequest {
-        let payPalClientID: String
-        let environment: Int
-        let payToken: String
-    }
-
     /**
      Tokenize a PayPal account for vault or checkout.
 
@@ -116,11 +110,13 @@ import BraintreeCore
 
     // MARK: - Internal
 
+    struct BTPayPalNativeSDKRequest {
+        let payPalClientID: String
+        let environment: Int
+        let orderID: String
+    }
+
     private let apiClient: BTAPIClient
-
-    @objc static let payPalEnvironmentSandbox = "sandbox"
-
-    @objc static let payPalEnvironmentProduction = "production"
 
     func constructBTPayPalNativeSDKRequest(with request: BTPayPalNativeRequest, completion: @escaping (BTPayPalNativeSDKRequest?, NSError?) -> Void) {
 
@@ -156,7 +152,7 @@ import BraintreeCore
                 return
             }
 
-            guard let environment = config.environment else {
+            guard let environment = config.environment, environment == "sandbox" || environment == "production" else {
                 let environmentError = NSError(domain: BTPayPalNativeClient.errorDomain,
                                                code: ErrorType.unknown.rawValue,
                                                userInfo: [NSLocalizedDescriptionKey: "PayPal Native Checkout failed because an invalid environment identifier was retrieved from the configuration."])
@@ -164,12 +160,7 @@ import BraintreeCore
                 return
             }
 
-//            var env: Int
-//            if environment == BTPayPalNativeClient.payPalEnvironmentSandbox {
-//                env = 0
-//            } else if environment == BTPayPalNativeClient.payPalEnvironmentProduction {
-//                env = 1
-//            } // TODO: handle edge case
+            let env = (environment == "production") ? 0 : 1
 
             self.apiClient.post(request.hermesPath, parameters: request.parameters(with: config)) { json, response, error in
                 if var err = error as NSError? {
@@ -186,7 +177,7 @@ import BraintreeCore
                     return
                 }
 
-                var approvalURL: URL?
+                let approvalURL: URL
                 if let url = json?["paymentResource"]["redirectUrl"].asURL() {
                     approvalURL = url
                 } else if let url = json?["agreementSetup"]["approvalUrl"].asURL() {
@@ -199,18 +190,22 @@ import BraintreeCore
                     return
                 }
 
-                // TODO: rewrite to avoid force cast (approvalURL!)
-                if let approvalURLComponents = URLComponents(url: approvalURL!, resolvingAgainstBaseURL: false),
-                   let payToken = approvalURLComponents.queryItems?.first(where: { $0.name == "token" || $0.name == "ba_token" })?.value {
+                let orderIDFromApprovalURL = URLComponents(url: approvalURL, resolvingAgainstBaseURL: false)?
+                    .queryItems?
+                    .first(where: { $0.name == "token" || $0.name == "ba_token" })?
+                    .value
 
-                    let nativeSDKRequest = BTPayPalNativeSDKRequest(payPalClientID: payPalClientID, environment: 0, payToken: payToken)
-                    completion(nativeSDKRequest, nil)
-                } else {
-                    // no token, return error
+                guard let orderID = orderIDFromApprovalURL else {
+                    let error = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                        code: ErrorType.unknown.rawValue,
+                                        userInfo: [NSLocalizedDescriptionKey: "Failed to fetch PayPal order id."])
+                    completion(nil, error)
+                    return
                 }
 
+                let nativeSDKRequest = BTPayPalNativeSDKRequest(payPalClientID: payPalClientID, environment: env, orderID: orderID)
+                completion(nativeSDKRequest, nil)
             }
         }
     }
-    
 }
