@@ -22,6 +22,18 @@ import BraintreeCore
     }
 
     /**
+     Initializes a PayPal Native request.
+
+     - Parameter payPalReturnURL: The return URL provided to the PayPal Native UI experience.
+     Used as part of the authentication process to identify your application. This value should match the one set in the `Return URLs` section of your application's dashboard on your [PayPal developer account](https://developer.paypal.com).
+
+     - Returns: A PayPal Native request.
+     */
+    @objc public init(payPalReturnURL: String) {
+        self.payPalReturnURL = payPalReturnURL
+    }
+
+    /**
      Defaults to false. When set to true, the shipping address selector will be displayed.
      */
     @objc public var isShippingAddressRequired: Bool = false
@@ -99,6 +111,14 @@ import BraintreeCore
      Display a custom description to the user for a billing agreement. For Checkout with Vault flows, you must also set requestBillingAgreement to true on your BTPayPalCheckoutRequest.
      */
     @objc public var billingAgreementDescription: String?
+
+    /**
+     The return URL provided to the PayPal Checkout Native UI experience.
+     Used as part of the authentication process to identify your application.
+
+     This value should match the one set in the `Return URLs` section of your application's dashboard on your [PayPal developer account](https://developer.paypal.com).
+     */
+    @objc public let payPalReturnURL: String?
 
     // MARK: - Internal
 

@@ -21,18 +21,18 @@ class BTPayPalNativeRequest_Tests : XCTestCase {
     // MARK: - landingPageTypeAsString
 
     func testLandingPageTypeAsString_whenLandingPageTypeIsNotSpecified_returnNil() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         XCTAssertNil(request.landingPageTypeAsString)
     }
 
     func testLandingPageTypeAsString_whenLandingPageTypeIsBilling_returnsBilling() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         request.landingPageType = .billing
         XCTAssertEqual(request.landingPageTypeAsString, "billing")
     }
 
     func testLandingPageTypeAsString_whenLandingPageTypeIsLogin_returnsLogin() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         request.landingPageType = .login
         XCTAssertEqual(request.landingPageTypeAsString, "login")
     }
@@ -40,7 +40,7 @@ class BTPayPalNativeRequest_Tests : XCTestCase {
     // MARK: - parametersWithConfiguration
 
     func testParametersWithConfiguration_returnsAllParams() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         request.isShippingAddressRequired = true
         request.displayName = "Display Name"
         request.landingPageType = .login
@@ -69,7 +69,7 @@ class BTPayPalNativeRequest_Tests : XCTestCase {
     }
 
     func testParametersWithConfiguration_whenDisplayNameNotSet_usesDisplayNameFromConfig() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
 
         let json = BTJSON(value: [
             "paypalEnabled": true,
@@ -87,7 +87,7 @@ class BTPayPalNativeRequest_Tests : XCTestCase {
     }
 
     func testParametersWithConfiguration_whenShippingAddressIsRequiredNotSet_returnsNoShippingTrue() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         // no_shipping = true should be the default.
 
         let parameters = request.parameters(with: configuration)
@@ -97,7 +97,7 @@ class BTPayPalNativeRequest_Tests : XCTestCase {
     }
 
     func testParametersWithConfiguration_whenShippingAddressIsRequiredIsTrue_returnsNoShippingFalse() {
-        let request = BTPayPalNativeRequest()
+        let request = BTPayPalNativeRequest(payPalReturnURL: "returnURL")
         request.isShippingAddressRequired = true
 
         let parameters = request.parameters(with: configuration)

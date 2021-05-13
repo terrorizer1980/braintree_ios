@@ -9,6 +9,21 @@ import BraintreeCore
     // MARK: - Public
 
     /**
+     Initializes a PayPal Checkout request.
+
+     - Parameter payPalReturnURL: The return URL provided to the PayPal Native UI experience.
+     Used as part of the authentication process to identify your application. This value should match the one set in the `Return URLs` section of your application's dashboard on your [PayPal developer account](https://developer.paypal.com)
+
+     - Parameter amount: Used for a one-time payment. Amount must be greater than or equal to zero, may optionally contain exactly 2 decimal places separated by '.', optional thousands separator ',', and is limited to 7 digits before the decimal point.
+
+     - Returns: A PayPal Checkout request.
+     */
+    @objc public init(payPalReturnURL: String, amount: String) {
+        self.amount = amount
+        super.init(payPalReturnURL: payPalReturnURL)
+    }
+
+    /**
      Payment intent.
 
      - Note: Must be set to BTPayPalRequestIntentSale for immediate payment, BTPayPalRequestIntentAuthorize to authorize a payment for capture later, or BTPayPalRequestIntentOrder to create an order. Defaults to BTPayPalRequestIntentAuthorize. Only applies to PayPal Checkout.
@@ -60,17 +75,6 @@ import BraintreeCore
      If set to true, this enables the Checkout with Vault flow, where the customer will be prompted to consent to a billing agreement during checkout.
      */
     @objc public var requestBillingAgreement: Bool = false
-
-    /**
-     Initializes a PayPal Checkout request.
-
-     - Parameter amount: Used for a one-time payment. Amount must be greater than or equal to zero, may optionally contain exactly 2 decimal places separated by '.', optional thousands separator ',', and is limited to 7 digits before the decimal point.
-
-     - Returns: A PayPal Checkout request.
-     */
-    @objc public init(amount: String) {
-        self.amount = amount
-    }
 
     // MARK: - Internal
 

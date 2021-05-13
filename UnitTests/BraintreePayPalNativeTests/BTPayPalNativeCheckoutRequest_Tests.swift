@@ -21,38 +21,38 @@ class BTPayPalNativeCheckoutRequest_Tests: XCTestCase {
     // MARK: - hermesPath
 
     func testHermesPath_returnCorrectPath() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         XCTAssertEqual(request.hermesPath, "v1/paypal_hermes/create_payment_resource")
     }
 
     // MARK: - paymentType
 
     func testPaymentType_returnCheckout() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         XCTAssertEqual(request.paymentType, .checkout)
     }
 
     // MARK: - intentAsString
 
     func testIntentAsString_whenIntentIsNotSpecified_returnsAuthorize() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         XCTAssertEqual(request.intentAsString, "authorize")
     }
 
     func testIntentAsString_whenIntentIsAuthorize_returnsAuthorize() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.intent = .authorize
         XCTAssertEqual(request.intentAsString, "authorize")
     }
 
     func testIntentAsString_whenIntentIsSale_returnsSale() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.intent = .sale
         XCTAssertEqual(request.intentAsString, "sale")
     }
 
     func testIntentAsString_whenIntentIsOrder_returnsOrder() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.intent = .order
         XCTAssertEqual(request.intentAsString, "order")
     }
@@ -60,18 +60,18 @@ class BTPayPalNativeCheckoutRequest_Tests: XCTestCase {
     // MARK: - userActionAsString
 
     func testUserActionAsString_whenUserActionNotSpecified_returnsEmptyString() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         XCTAssertEqual(request.userActionAsString, "")
     }
 
     func testUserActionAsString_whenUserActionIsDefault_returnsEmptyString() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.userAction = .default
         XCTAssertEqual(request.userActionAsString, "")
     }
 
     func testUserActionAsString_whenUserActionIsCommit_returnsCommit() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.userAction = .commit
         XCTAssertEqual(request.userActionAsString, "commit")
     }
@@ -79,7 +79,7 @@ class BTPayPalNativeCheckoutRequest_Tests: XCTestCase {
     // MARK: - parametersWithConfiguration
 
     func testParametersWithConfiguration_returnsAllParams() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.intent = .sale
         request.offerPayLater = true
         request.currencyCode = "currency-code"
@@ -121,7 +121,7 @@ class BTPayPalNativeCheckoutRequest_Tests: XCTestCase {
     }
 
     func testParametersWithConfiguration_returnsMinimumParams() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
 
         let parameters = request.parameters(with: configuration)
 
@@ -140,14 +140,14 @@ class BTPayPalNativeCheckoutRequest_Tests: XCTestCase {
 
         configuration = BTConfiguration(json: json)
 
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         let parameters = request.parameters(with: configuration)
 
         XCTAssertEqual(parameters["currency_iso_code"] as? String, "currency-code")
     }
 
     func testParametersWithConfiguration_whenRequestBillingAgreementIsFalse_andBillingAgreementDescriptionIsSet_doesNotReturnDescription() {
-        let request = BTPayPalNativeCheckoutRequest(amount: "1")
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
         request.billingAgreementDescription = "description"
 
         let parameters = request.parameters(with: configuration)

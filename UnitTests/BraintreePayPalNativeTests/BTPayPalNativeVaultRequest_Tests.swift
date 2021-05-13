@@ -21,21 +21,21 @@ class BTPayPalNativeVaultRequest_Tests: XCTestCase {
     // MARK: - hermesPath
 
     func testHermesPath_returnCorrectPath() {
-        let request = BTPayPalNativeVaultRequest()
+        let request = BTPayPalNativeVaultRequest(payPalReturnURL: "returnURL")
         XCTAssertEqual(request.hermesPath, "v1/paypal_hermes/setup_billing_agreement")
     }
 
     // MARK: - paymentType
 
     func testPaymentType_returnsVault() {
-        let request = BTPayPalNativeVaultRequest()
+        let request = BTPayPalNativeVaultRequest(payPalReturnURL: "returnURL")
         XCTAssertEqual(request.paymentType, .vault)
     }
 
     // MARK: - parametersWithConfiguration
 
     func testParametersWithConfiguration_returnsAllParams() {
-        let request = BTPayPalNativeVaultRequest()
+        let request = BTPayPalNativeVaultRequest(payPalReturnURL: "returnURL")
         request.billingAgreementDescription = "desc"
 
         let shippingAddress = BTPostalAddress()
