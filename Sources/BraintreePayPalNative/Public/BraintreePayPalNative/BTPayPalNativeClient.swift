@@ -37,6 +37,12 @@ import BraintreeCore
         self.apiClient = apiClient
     }
 
+    struct BTPayPalNativeSDKRequest {
+        let payPalClientID: String
+        let environment: Int
+        let payToken: String
+    }
+
     /**
      Tokenize a PayPal account for vault or checkout.
 
@@ -60,25 +66,79 @@ import BraintreeCore
             return
         }
 
-        constructApprovalURL(with: request) { approvalURL, error in
-            // continue!
+        constructBTPayPalNativeSDKRequest(with: request) { (nativeSDKRequest, error) in
+            // code
         }
 
+        // TODO: use this token to pass into Native XO SDK
+        // TODO: confirm that we can ommit the call to PPDataCollector for the Native XO flow
 
+        //            NSString *pairingID = [self.class tokenFromApprovalURL:self.approvalUrl];
+        //
+        //            self.clientMetadataID = [PPDataCollector clientMetadataID:pairingID];
+        //
+        //            BOOL analyticsSuccess = error ? NO : YES;
+        //
+        //            [self sendAnalyticsEventForInitiatingOneTouchForPaymentType:request.paymentType withSuccess:analyticsSuccess];
+        //
+        //            BOOL isPayPalCheckoutRequest = [request isKindOfClass:BTPayPalCheckoutRequest.class];
+        //
+        //            if (isPayPalCheckoutRequest && ((BTPayPalCheckoutRequest *)request).useNativeUI) {
+        //                [self startPayPalNativeCheckout:(BTPayPalCheckoutRequest *)request
+        //                                  configuration:configuration
+        //                                      pairingId:pairingID
+        //                                     completion:completionBlock];
+        //            } else {
+        //                [self handlePayPalRequestWithURL:approvalUrl
+        //                                           error:error
+        //                                     paymentType:request.paymentType
+        //                                      completion:completionBlock];
     }
+
+
+//    - (void)sendAnalyticsEventForInitiatingOneTouchForPaymentType:(BTPayPalPaymentType)paymentType
+//                                                      withSuccess:(BOOL)success {
+//        NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.initiate.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
+//        [self.apiClient sendAnalyticsEvent:eventName];
+//
+//        if ([self.payPalRequest isKindOfClass:BTPayPalCheckoutRequest.class] && ((BTPayPalCheckoutRequest *)self.payPalRequest).offerPayLater) {
+//            NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.paylater.offered.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
+//
+//            [self.apiClient sendAnalyticsEvent:eventName];
+//        }
+//
+//        if ([self.payPalRequest isKindOfClass:BTPayPalVaultRequest.class] && ((BTPayPalVaultRequest *)self.payPalRequest).offerCredit) {
+//            NSString *eventName = [NSString stringWithFormat:@"ios.%@.webswitch.credit.offered.%@", [self.class eventStringForPaymentType:paymentType], success ? @"started" : @"failed"];
+//
+//            [self.apiClient sendAnalyticsEvent:eventName];
+//        }
+//    }
 
     // MARK: - Internal
 
     private let apiClient: BTAPIClient
 
-    func constructApprovalURL(with request: BTPayPalNativeRequest, completion: @escaping (URL?, NSError?) -> Void) {
+    @objc static let payPalEnvironmentSandbox = "sandbox"
+
+    @objc static let payPalEnvironmentProduction = "production"
+
+    func constructBTPayPalNativeSDKRequest(with request: BTPayPalNativeRequest, completion: @escaping (BTPayPalNativeSDKRequest?, NSError?) -> Void) {
+
         apiClient.fetchOrReturnRemoteConfiguration { configuration, error in
             if let err = error as NSError? {
                 completion(nil, err)
                 return
             }
 
-            guard let config = configuration, config.json["paypalEnabled"].isTrue else {
+            guard let config = configuration else {
+                let configError = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                          code: ErrorType.unknown.rawValue,
+                                          userInfo: [NSLocalizedDescriptionKey: "Failed to fetch Braintree configuration."])
+                completion(nil, configError)
+                return
+            }
+
+            guard config.json["paypalEnabled"].isTrue else {
                 self.apiClient.sendAnalyticsEvent("ios.paypal-otc.preflight.disabled") // TODO: - change analytics events for native flow?
                 let payPalDisabledError = NSError(domain: BTPayPalNativeClient.errorDomain,
                                                   code: ErrorType.disabled.rawValue,
@@ -87,6 +147,29 @@ import BraintreeCore
                 completion(nil, payPalDisabledError)
                 return
             }
+
+            guard let payPalClientID = config.json["paypal"]["clientId"].asString() else {
+                let clientIDError = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                            code: ErrorType.disabled.rawValue,
+                                            userInfo: [NSLocalizedDescriptionKey: "Failed to fetch PayPalClientID from Braintree configuration."])
+                completion(nil, clientIDError)
+                return
+            }
+
+            guard let environment = config.environment else {
+                let environmentError = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                               code: ErrorType.unknown.rawValue,
+                                               userInfo: [NSLocalizedDescriptionKey: "PayPal Native Checkout failed because an invalid environment identifier was retrieved from the configuration."])
+                completion(nil, environmentError)
+                return
+            }
+
+//            var env: Int
+//            if environment == BTPayPalNativeClient.payPalEnvironmentSandbox {
+//                env = 0
+//            } else if environment == BTPayPalNativeClient.payPalEnvironmentProduction {
+//                env = 1
+//            } // TODO: handle edge case
 
             self.apiClient.post(request.hermesPath, parameters: request.parameters(with: config)) { json, response, error in
                 if var err = error as NSError? {
@@ -103,7 +186,7 @@ import BraintreeCore
                     return
                 }
 
-                var approvalURL: URL
+                var approvalURL: URL?
                 if let url = json?["paymentResource"]["redirectUrl"].asURL() {
                     approvalURL = url
                 } else if let url = json?["agreementSetup"]["approvalUrl"].asURL() {
@@ -116,7 +199,16 @@ import BraintreeCore
                     return
                 }
 
-                completion(approvalURL, nil)
+                // TODO: rewrite to avoid force cast (approvalURL!)
+                if let approvalURLComponents = URLComponents(url: approvalURL!, resolvingAgainstBaseURL: false),
+                   let payToken = approvalURLComponents.queryItems?.first(where: { $0.name == "token" || $0.name == "ba_token" })?.value {
+
+                    let nativeSDKRequest = BTPayPalNativeSDKRequest(payPalClientID: payPalClientID, environment: 0, payToken: payToken)
+                    completion(nativeSDKRequest, nil)
+                } else {
+                    // no token, return error
+                }
+
             }
         }
     }

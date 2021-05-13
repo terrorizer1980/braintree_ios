@@ -76,6 +76,26 @@ class BTPayPalNativeClient_Tests: XCTestCase {
         self.waitForExpectations(timeout: 1)
     }
 
+    func testConstructApprovalURL_whenPayPalEnabledMissingFromConfiguration_callsBackWithError() {
+        mockAPIClient.cannedConfigurationResponseBody = BTJSON(value: [])
+
+        let request = BTPayPalNativeCheckoutRequest(payPalReturnURL: "returnURL", amount: "1")
+        let expectation = self.expectation(description: "Checkout fails with error")
+
+        payPalNativeClient.constructApprovalURL(with: request) { (nonce, error) in
+            guard let error = error as NSError? else { XCTFail(); return }
+            XCTAssertNil(nonce)
+            XCTAssertEqual(error.domain, BTPayPalNativeClient.errorDomain)
+            XCTAssertEqual(error.code, BTPayPalNativeClient.ErrorType.disabled.rawValue)
+            XCTAssertEqual(error.localizedDescription, "PayPal is not enabled for this merchant")
+
+            XCTAssertTrue(self.mockAPIClient.postedAnalyticsEvents.contains("ios.paypal-otc.preflight.disabled"))
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 1)
+    }
+
     // MARK: - constructApprovalURL - POST request to Hermes endpoint
 
     func testConstructApprovalURL_whenRemoteConfigurationFetchSucceeds_postsToCorrectEndpoint() {
