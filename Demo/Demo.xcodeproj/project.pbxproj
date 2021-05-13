@@ -10,6 +10,8 @@
 		08222B07C311489F90D08D41 /* Pods_Demo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D23244B5E9EE59BAB3F3003 /* Pods_Demo.framework */; };
 		420176062641CD1200A2ACCA /* BraintreePayPalNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 420176052641CD1200A2ACCA /* BraintreePayPalNative.framework */; };
 		420176072641CD1200A2ACCA /* BraintreePayPalNative.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 420176052641CD1200A2ACCA /* BraintreePayPalNative.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		42021626264DDA2C008AC1BA /* PayPalCheckout.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42021625264DDA2C008AC1BA /* PayPalCheckout.xcframework */; };
+		42021627264DDA2C008AC1BA /* PayPalCheckout.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 42021625264DDA2C008AC1BA /* PayPalCheckout.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		423B451025FFB5E500EF563F /* PPRiskMagnes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D119625A3A834003D8552 /* PPRiskMagnes.xcframework */; };
 		423B451125FFB5E500EF563F /* PPRiskMagnes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 428D119625A3A834003D8552 /* PPRiskMagnes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		42456E3E25474B620018374E /* BTUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42456E3C25474B620018374E /* BTUITest.swift */; };
@@ -181,6 +183,7 @@
 				803D6504256DAF9A00ACE692 /* BraintreeThreeDSecure.framework in Embed Frameworks */,
 				803D6500256DAF9A00ACE692 /* BraintreePaymentFlow.framework in Embed Frameworks */,
 				803D6506256DAF9A00ACE692 /* BraintreeUnionPay.framework in Embed Frameworks */,
+				42021627264DDA2C008AC1BA /* PayPalCheckout.xcframework in Embed Frameworks */,
 				803D6502256DAF9A00ACE692 /* BraintreePayPal.framework in Embed Frameworks */,
 				803D64F8256DAF9A00ACE692 /* BraintreeApplePay.framework in Embed Frameworks */,
 				42F3F6DD2603B83100401B0D /* CardinalMobile.xcframework in Embed Frameworks */,
@@ -192,6 +195,7 @@
 
 /* Begin PBXFileReference section */
 		420176052641CD1200A2ACCA /* BraintreePayPalNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BraintreePayPalNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		42021625264DDA2C008AC1BA /* PayPalCheckout.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PayPalCheckout.xcframework; path = ../PayPalCheckout.xcframework; sourceTree = "<group>"; };
 		42456E3C25474B620018374E /* BTUITest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BTUITest.swift; sourceTree = "<group>"; };
 		42456E3D25474B620018374E /* DateGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateGenerator.swift; sourceTree = "<group>"; };
 		428D119625A3A834003D8552 /* PPRiskMagnes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PPRiskMagnes.xcframework; path = ../Frameworks/PPRiskMagnes.xcframework; sourceTree = "<group>"; };
@@ -447,6 +451,7 @@
 				803D6503256DAF9A00ACE692 /* BraintreeThreeDSecure.framework in Frameworks */,
 				803D64F9256DAF9A00ACE692 /* BraintreeCard.framework in Frameworks */,
 				803D6505256DAF9A00ACE692 /* BraintreeUnionPay.framework in Frameworks */,
+				42021626264DDA2C008AC1BA /* PayPalCheckout.xcframework in Frameworks */,
 				08222B07C311489F90D08D41 /* Pods_Demo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -946,6 +951,7 @@
 		A0988FFB24DB44D60095EEEE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				42021625264DDA2C008AC1BA /* PayPalCheckout.xcframework */,
 				420176052641CD1200A2ACCA /* BraintreePayPalNative.framework */,
 				42F3F6DB2603B83100401B0D /* CardinalMobile.xcframework */,
 				803D64EA256DAF9A00ACE692 /* BraintreeAmericanExpress.framework */,
