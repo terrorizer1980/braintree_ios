@@ -1,8 +1,9 @@
 import BraintreeCore
+import PayPalCheckout
 
 struct BTPayPalNativeOrder {
     let payPalClientID: String
-    let environment: Int
+    let environment: PayPalCheckout.Environment
     let orderID: String
 }
 
@@ -47,7 +48,16 @@ class BTPayPalNativeOrderCreationClient {
                 return
             }
 
-            guard let environment = config.environment, environment == "sandbox" || environment == "production" else {
+            let payPalEnvironment: PayPalCheckout.Environment?
+            if config.environment == "production" {
+                payPalEnvironment = .live
+            } else if config.environment == "sandbox" {
+                payPalEnvironment = .sandbox
+            } else {
+                payPalEnvironment = nil
+            }
+
+            guard let environment = payPalEnvironment else {
                 let environmentError = NSError(domain: BTPayPalNativeClient.errorDomain,
                                                code: BTPayPalNativeClient.ErrorType.unknown.rawValue,
                                                userInfo: [NSLocalizedDescriptionKey: "PayPal Native Checkout failed because an invalid environment identifier was retrieved from the configuration."])
@@ -69,9 +79,8 @@ class BTPayPalNativeOrderCreationClient {
                     return
                 }
 
-                let env = (environment == "production") ? 0 : 1
                 let order = BTPayPalNativeOrder(payPalClientID: payPalClientID,
-                                                environment: env,
+                                                environment: environment,
                                                 orderID: hermesResponse.orderID)
                 completion(order, nil)
             }

@@ -233,7 +233,7 @@ class BTPayPalNativeOrderCreationClient_Tests: XCTestCase {
             XCTAssertNil(error)
             XCTAssertEqual(order?.orderID, "some-token")
             XCTAssertEqual(order?.payPalClientID, "some-client-id")
-            XCTAssertEqual(order?.environment, 1)
+            XCTAssertEqual(order?.environment, .sandbox)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 1)
@@ -264,7 +264,7 @@ class BTPayPalNativeOrderCreationClient_Tests: XCTestCase {
             XCTAssertNil(error)
             XCTAssertEqual(order?.orderID, "some-token")
             XCTAssertEqual(order?.payPalClientID, "some-client-id")
-            XCTAssertEqual(order?.environment, 0)
+            XCTAssertEqual(order?.environment, .live)
             expectation.fulfill()
         }
         self.waitForExpectations(timeout: 1)

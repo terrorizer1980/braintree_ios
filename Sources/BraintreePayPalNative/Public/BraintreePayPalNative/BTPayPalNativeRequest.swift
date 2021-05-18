@@ -118,7 +118,7 @@ import BraintreeCore
 
      This value should match the one set in the `Return URLs` section of your application's dashboard on your [PayPal developer account](https://developer.paypal.com).
      */
-    @objc public let payPalReturnURL: String?
+    @objc public let payPalReturnURL: String
 
     // MARK: - Internal
 

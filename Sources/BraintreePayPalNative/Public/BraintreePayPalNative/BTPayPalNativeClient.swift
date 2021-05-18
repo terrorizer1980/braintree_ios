@@ -34,7 +34,8 @@ import PayPalCheckout
 
      - Returns: A PayPal client
      */
-    @objc public init(apiClient: BTAPIClient) {
+    @objc(initWithAPIClient:)
+    public init(apiClient: BTAPIClient) {
         self.apiClient = apiClient
     }
 
@@ -63,7 +64,38 @@ import PayPalCheckout
 
         let orderCreationClient = BTPayPalNativeOrderCreationClient(with: apiClient)
         orderCreationClient.createOrder(with: request) { (order, error) in
+            if let err = error {
+                completion(nil, err)
+                return
+            }
 
+            guard let order = order else {
+                let missingOrderError = NSError(domain: BTPayPalNativeClient.errorDomain,
+                                    code: ErrorType.integration.rawValue,
+                                    userInfo: [NSLocalizedDescriptionKey: "Failed to create a PayPal order."])
+                completion(nil, missingOrderError)
+                return
+            }
+
+            let payPalNativeConfig = PayPalCheckout.CheckoutConfig(clientID: order.payPalClientID,
+                                                                   returnUrl: request.payPalReturnURL,
+                                                                   createOrder: nil,
+                                                                   onApprove: nil,
+                                                                   onCancel: nil,
+                                                                   onError: nil,
+                                                                   environment: order.environment)
+
+            PayPalCheckout.Checkout.set(config: payPalNativeConfig)
+
+            PayPalCheckout.Checkout.start(presentingViewController: nil, createOrder: { action in
+                action.set(orderId: order.orderID)
+            }, onApprove: { approval in
+
+            }, onCancel: {
+
+            }, onError: { error in
+
+            })
         }
     }
 
