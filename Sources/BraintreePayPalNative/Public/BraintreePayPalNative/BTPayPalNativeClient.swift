@@ -71,7 +71,7 @@ import PayPalCheckout
 
             guard let order = order else {
                 let missingOrderError = NSError(domain: BTPayPalNativeClient.errorDomain,
-                                    code: ErrorType.integration.rawValue,
+                                    code: ErrorType.unknown.rawValue,
                                     userInfo: [NSLocalizedDescriptionKey: "Failed to create a PayPal order."])
                 completion(nil, missingOrderError)
                 return
