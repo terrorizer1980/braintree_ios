@@ -1,4 +1,5 @@
 import BraintreeCore
+import BraintreePayPal
 import PayPalCheckout
 
 @objc public class BTPayPalNativeClient: NSObject {
@@ -52,8 +53,8 @@ import PayPalCheckout
     */
     // TODO: - use Error instead of NSError?
     @objc(tokenizePayPalAccountWithPayPalRequest:completion:)
-    public func tokenizePayPalAccount(with request: BTPayPalNativeRequest, completion: @escaping (BTPayPalNativeAccountNonce?, NSError?) -> Void) {
-        guard request is BTPayPalNativeCheckoutRequest || request is BTPayPalNativeVaultRequest else {
+    public func tokenizePayPalAccount(with nativeRequest: BTPayPalRequest, completion: @escaping (BTPayPalNativeAccountNonce?, NSError?) -> Void) {
+        guard let request = nativeRequest as? (BTPayPalRequest & BTPayPalNativeRequest) else {
             let error = NSError(domain: BTPayPalNativeClient.errorDomain,
                                 code: ErrorType.integration.rawValue,
                                 userInfo: [NSLocalizedDescriptionKey: "BTPayPalNativeClient failed because request is not of type BTPayPalNativeCheckoutRequest or BTPayPalNativeVaultRequest."])

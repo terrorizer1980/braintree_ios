@@ -1,4 +1,5 @@
 import BraintreeCore
+import BraintreePayPal
 import PayPalCheckout
 
 struct BTPayPalNativeOrder {
@@ -15,7 +16,7 @@ class BTPayPalNativeOrderCreationClient {
         self.apiClient = apiClient
     }
 
-    func createOrder(with request: BTPayPalNativeRequest, completion: @escaping (BTPayPalNativeOrder?, NSError?) -> Void) {
+    func createOrder(with request: BTPayPalRequest & BTPayPalNativeRequest, completion: @escaping (BTPayPalNativeOrder?, NSError?) -> Void) {
         apiClient.fetchOrReturnRemoteConfiguration { configuration, error in
             if let err = error as NSError? {
                 completion(nil, err)

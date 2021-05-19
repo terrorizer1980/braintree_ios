@@ -1,47 +1,31 @@
 import Foundation
 import BraintreeCore
+import BraintreePayPal
 
 /**
  Options for the PayPal Vault flow.
  */
-@objc public class BTPayPalNativeVaultRequest: BTPayPalNativeRequest {
+@objc public class BTPayPalNativeVaultRequest: BTPayPalVaultRequest, BTPayPalNativeRequest {
+
 
     // MARK: - Public
 
     /**
-     Optional: Offers PayPal Credit if the customer qualifies. Defaults to false.
+     Initializes a PayPal Vault request.
+
+     - Parameter payPalReturnURL: The return URL provided to the PayPal Native UI experience.
+     Used as part of the authentication process to identify your application. This value should match the one set in the `Return URLs` section of your application's dashboard on your [PayPal developer account](https://developer.paypal.com)
+
+     - Returns: A PayPal Vault request.
      */
-    @objc public var offerCredit: Bool = false
+    @objc public init(payPalReturnURL: String) {
+        self.payPalReturnURL = payPalReturnURL
+        self.hermesPath = "v1/paypal_hermes/setup_billing_agreement"
+        super.init()
+    }
 
     // MARK: - Internal
 
-    override var hermesPath: String {
-        "v1/paypal_hermes/setup_billing_agreement"
-    }
-
-    let paymentType = BTPayPalNativeRequest.PaymentType.vault
-
-    override func parameters(with configuration: BTConfiguration) -> [String : Any] {
-        var parameters = super.parameters(with: configuration)
-
-        if let billingAgreementDesc = billingAgreementDescription {
-            parameters["description"] = billingAgreementDesc
-        }
-
-        parameters["offer_paypal_credit"] = offerCredit
-
-        if let addressOverride = shippingAddressOverride {
-            var shippingAddressParams: [String : String] = [:]
-            shippingAddressParams["line1"] = addressOverride.streetAddress
-            shippingAddressParams["line2"] = addressOverride.extendedAddress
-            shippingAddressParams["city"] = addressOverride.locality
-            shippingAddressParams["state"] = addressOverride.region
-            shippingAddressParams["postal_code"] = addressOverride.postalCode
-            shippingAddressParams["country_code"] = addressOverride.countryCodeAlpha2
-            shippingAddressParams["recipient_name"] = addressOverride.recipientName
-            parameters["shipping_address"] = shippingAddressParams
-        }
-
-        return parameters
-    }
+    let payPalReturnURL: String
+    let hermesPath: String
 }

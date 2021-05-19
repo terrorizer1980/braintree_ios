@@ -1,6 +1,8 @@
 import XCTest
 import BraintreeCore
+import BraintreePayPal
 import BraintreeTestShared
+
 @testable import BraintreePayPalNative
 
 class BTPayPalNativeClient_Tests: XCTestCase {
@@ -25,7 +27,7 @@ class BTPayPalNativeClient_Tests: XCTestCase {
 
     func testTokenize_whenRequestIsNotCheckoutOrVaultSubclass_returnsError() {
         let expectation = self.expectation(description: "calls completion with error")
-        payPalNativeClient.tokenizePayPalAccount(with: BTPayPalNativeRequest(payPalReturnURL: "returnURL")) { nonce, error in
+        payPalNativeClient.tokenizePayPalAccount(with: BTPayPalRequest()) { nonce, error in
             XCTAssertNil(nonce)
             XCTAssertNotNil(error)
             XCTAssertEqual(error?.localizedDescription, "BTPayPalNativeClient failed because request is not of type BTPayPalNativeCheckoutRequest or BTPayPalNativeVaultRequest.")
