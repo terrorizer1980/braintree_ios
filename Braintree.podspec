@@ -19,13 +19,14 @@ Pod::Spec.new do |s|
   s.compiler_flags   = "-Wall -Werror -Wextra"
   s.swift_version    = "5.1"
 
-  s.default_subspecs = %w[Core Card PayPal]
+  s.default_subspecs = %w[Core Card]
 
-  s.subspec "AmericanExpress" do |s|
-    s.source_files  = "Sources/BraintreeAmericanExpress/**/*.{h,m}"
-    s.public_header_files = "Sources/BraintreeAmericanExpress/Public/BraintreeAmericanExpress/*.h"
-    s.dependency "Braintree/Core"
-  end
+  # s.subspec "AmericanExpress" do |s|
+  #   s.source_files  = "Sources/BraintreeAmericanExpress/**/*.{h,m}"
+  #   s.public_header_files = "Sources/BraintreeAmericanExpress/Public/BraintreeAmericanExpress/*.h"
+  #   s.dependency "Braintree/Core"
+  #   s.vendored_frameworks = "Frameworks/PPRiskMagnes.xcframework"
+  # end
 
   s.subspec "ApplePay" do |s|
     s.source_files  = "Sources/BraintreeApplePay/**/*.{h,m}"
@@ -69,6 +70,7 @@ Pod::Spec.new do |s|
   s.subspec "PayPalDataCollector" do |s|
     s.source_files = "Sources/PayPalDataCollector/**/*.{swift}"
     s.vendored_frameworks = "Frameworks/PPRiskMagnes.xcframework"
+    # s.exclude_files = "Frameworks/PPRiskMagnes.framework"
   end
 
   s.subspec "ThreeDSecure" do |s|
@@ -90,6 +92,12 @@ Pod::Spec.new do |s|
     s.public_header_files = "Sources/BraintreeVenmo/Public/BraintreeVenmo/*.h"
     s.dependency "Braintree/Core"
   end
+
+  # s.subspec "SwiftTestFramework" do |s|
+  #   s.source_files  = "Sources/SwiftTestFramework/*.{h,swift}"
+  #   s.public_header_files = "Sources/SwiftTestFramework/*.{h}"
+  #   s.vendored_frameworks = "Frameworks/PPRiskMagnes.xcframework"
+  # end
 
   # https://github.com/CocoaPods/CocoaPods/issues/10065#issuecomment-694266259
   s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }

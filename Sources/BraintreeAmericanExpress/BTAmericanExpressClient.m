@@ -4,6 +4,7 @@
 #import <Braintree/BTAmericanExpressRewardsBalance.h>
 #import <Braintree/BraintreeCore.h>
 #import <Braintree/BTAPIClient_Internal.h>
+#import <PPRiskMagnes/PPRiskMagnes-Swift.h>
 
 #elif SWIFT_PACKAGE // SPM
 #import <BraintreeAmericanExpress/BTAmericanExpressRewardsBalance.h>
@@ -14,6 +15,8 @@
 #import <BraintreeAmericanExpress/BTAmericanExpressRewardsBalance.h>
 #import <BraintreeCore/BraintreeCore.h>
 #import <BraintreeCore/BTAPIClient_Internal.h>
+#import <PPRiskMagnes/PPRiskMagnes-Swift.h>
+
 #endif
 
 NSString *const BTAmericanExpressErrorDomain = @"com.braintreepayments.BTAmericanExpressErrorDomain";
@@ -29,6 +32,10 @@ NSString *const BTAmericanExpressErrorDomain = @"com.braintreepayments.BTAmerica
     if (self = [super init]) {
         _apiClient = apiClient;
     }
+
+    MagnesResult *result = [[MagnesSDK shared] collectAndSubmit];
+    NSLog(@"%@", result);
+
     return self;
 }
 
