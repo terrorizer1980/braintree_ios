@@ -1,7 +1,9 @@
 # Braintree iOS SDK Release Notes
 
-## unreleased
+## 5.4.1 (2021-06-22)
 * Re-add `BraintreeCore` dependency to `PayPalDataCollector` for Swift Package Manager archive issue workaround (fixes #679)
+* Xcode 13 Beta
+  * Remove invalid file path exclusions from `Package.swift` (thanks @JonathanDowning)
 
 ## 5.4.0 (2021-06-07)
 * Venmo
