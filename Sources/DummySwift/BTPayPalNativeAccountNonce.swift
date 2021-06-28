@@ -1,8 +1,10 @@
-//
-//  BTPayPalNativeAccountNonce.swift
-//  DummySwift
-//
-//  Created by Cannillo, Sammy on 6/28/21.
-//
+#if canImport(BraintreePayPal)
+import BraintreePayPal
+#endif
 
-import Foundation
+/**
+ Contains information about a PayPal payment method.
+ */
+@objc class BTPayPalNativeAccountNonce: BTPayPalAccountNonce {
+
+}

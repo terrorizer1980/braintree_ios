@@ -2,7 +2,7 @@ import Foundation
 import PayPalCheckout
 #if canImport(BraintreePayPal)
 import BraintreePayPal
-import BraintreeCore
+//import BraintreeCore
 #endif
 
 class DummySwift {
@@ -20,5 +20,8 @@ class DummySwift {
 
         // use BT Core
         let apiClient = BTAPIClient.init(authorization: "INITME")
+
+        let driver = BTPayPalDriver.init(apiClient: apiClient!)
+
     }
 }
