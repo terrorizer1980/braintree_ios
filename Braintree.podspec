@@ -71,6 +71,19 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "Frameworks/PPRiskMagnes.xcframework"
   end
 
+  # s.subspec "PayPalNative" do |s|
+  #   s.source_files = "Sources/BraintreePayPalNative/**/*.{swift}"
+  #   s.vendored_frameworks = "Frameworks/PayPalCheckout.xcframework"
+  #   s.dependency "Braintree/PayPal"
+  # end
+  
+  s.subspec "DummySwift" do |s|
+    s.source_files = "Sources/DummySwift/*.{swift,h}"
+    s.dependency "Braintree/Core"
+    s.dependency "Braintree/PayPal"
+    s.vendored_frameworks = "Frameworks/PayPalCheckout.xcframework"
+  end
+
   s.subspec "ThreeDSecure" do |s|
     s.source_files = "Sources/BraintreeThreeDSecure/**/*.{h,m}"
     s.public_header_files = "Sources/BraintreeThreeDSecure/Public/BraintreeThreeDSecure/*.h"

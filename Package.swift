@@ -36,6 +36,10 @@ let package = Package(
             targets: ["BraintreePayPal"]
         ),
         .library(
+            name: "DummySwift",
+            targets: ["DummySwift", "PayPalCheckout"]
+        ),
+        .library(
             name: "BraintreeThreeDSecure",
             targets: ["BraintreeThreeDSecure"]
         ),
@@ -112,6 +116,11 @@ let package = Package(
             publicHeadersPath: "Public"
         ),
         .target(
+            name: "DummySwift",
+            dependencies: ["BraintreePayPal"],
+            path: "Sources/DummySwift"
+        ),
+        .target(
             name: "BraintreeThreeDSecure",
             dependencies: ["BraintreePaymentFlow", "BraintreeCard"],
             exclude: ["Info.plist"],
@@ -137,6 +146,10 @@ let package = Package(
         .binaryTarget(
             name: "KountDataCollector",
             path: "Frameworks/KountDataCollector.xcframework"
+        ),
+        .binaryTarget(
+            name: "PayPalCheckout",
+            path: "Frameworks/PayPalCheckout.xcframework"
         ),
         .target(
             name: "PayPalDataCollector",
