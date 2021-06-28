@@ -48,9 +48,14 @@ import PayPalCheckout
                                                                        environment: order.environment)
 
                 PayPalCheckout.Checkout.set(config: payPalNativeConfig)
+                PayPalCheckout.Checkout.showsExitAlert = false
 
                 PayPalCheckout.Checkout.start(presentingViewController: nil, createOrder: { action in
-                    action.set(orderId: order.orderID)
+                    if request is BTPayPalNativeCheckoutRequest {
+                        action.set(orderId: order.orderID)
+                    } else if request is BTPayPalNativeVaultRequest {
+                        action.set(billingAgreementToken: order.orderID)
+                    }
                 }, onApprove: { [weak self] approval in
                     self?.tokenize(approval: approval, request: request, completion: completion)
                 }, onCancel: {
