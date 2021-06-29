@@ -152,7 +152,6 @@
 		80BD13D6268A986200776CB7 /* BTPayPalNativeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13C9268A986100776CB7 /* BTPayPalNativeError.swift */; platformFilter = ios; };
 		80BD13D7268A986200776CB7 /* BTPayPalNativeTokenizationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13CA268A986100776CB7 /* BTPayPalNativeTokenizationClient.swift */; platformFilter = ios; };
 		80BD13D8268A986200776CB7 /* BraintreePayPalNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 80BD13CB268A986100776CB7 /* BraintreePayPalNative.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		80BD13DA268A986200776CB7 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13CD268A986100776CB7 /* File.swift */; platformFilter = ios; };
 		80BD13DB268A986200776CB7 /* BTPayPalNativeCheckoutRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13CE268A986100776CB7 /* BTPayPalNativeCheckoutRequest.swift */; platformFilter = ios; };
 		80BD13DC268A986200776CB7 /* BTPayPalNativeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13CF268A986100776CB7 /* BTPayPalNativeClient.swift */; platformFilter = ios; };
 		80BD13DD268A986200776CB7 /* BTPayPalNativeTokenizationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BD13D0268A986100776CB7 /* BTPayPalNativeTokenizationRequest.swift */; platformFilter = ios; };
@@ -927,7 +926,6 @@
 		80BD13C9268A986100776CB7 /* BTPayPalNativeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BTPayPalNativeError.swift; path = Sources/BraintreePayPalNative/BTPayPalNativeError.swift; sourceTree = SOURCE_ROOT; };
 		80BD13CA268A986100776CB7 /* BTPayPalNativeTokenizationClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BTPayPalNativeTokenizationClient.swift; path = Sources/BraintreePayPalNative/BTPayPalNativeTokenizationClient.swift; sourceTree = SOURCE_ROOT; };
 		80BD13CB268A986100776CB7 /* BraintreePayPalNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BraintreePayPalNative.h; path = Sources/BraintreePayPalNative/BraintreePayPalNative.h; sourceTree = SOURCE_ROOT; };
-		80BD13CD268A986100776CB7 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = File.swift; path = Sources/BraintreePayPalNative/File.swift; sourceTree = SOURCE_ROOT; };
 		80BD13CE268A986100776CB7 /* BTPayPalNativeCheckoutRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BTPayPalNativeCheckoutRequest.swift; path = Sources/BraintreePayPalNative/BTPayPalNativeCheckoutRequest.swift; sourceTree = SOURCE_ROOT; };
 		80BD13CF268A986100776CB7 /* BTPayPalNativeClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BTPayPalNativeClient.swift; path = Sources/BraintreePayPalNative/BTPayPalNativeClient.swift; sourceTree = SOURCE_ROOT; };
 		80BD13D0268A986100776CB7 /* BTPayPalNativeTokenizationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BTPayPalNativeTokenizationRequest.swift; path = Sources/BraintreePayPalNative/BTPayPalNativeTokenizationRequest.swift; sourceTree = SOURCE_ROOT; };
@@ -1770,7 +1768,6 @@
 				80BD13CA268A986100776CB7 /* BTPayPalNativeTokenizationClient.swift */,
 				80BD13D0268A986100776CB7 /* BTPayPalNativeTokenizationRequest.swift */,
 				80BD13D5268A986200776CB7 /* BTPayPalNativeVaultRequest.swift */,
-				80BD13CD268A986100776CB7 /* File.swift */,
 			);
 			path = BraintreePayPalNative;
 			sourceTree = "<group>";
@@ -3534,7 +3531,6 @@
 				80BD13DF268A986200776CB7 /* BTPayPalNativeOrderCreationClient.swift in Sources */,
 				80BD13DC268A986200776CB7 /* BTPayPalNativeClient.swift in Sources */,
 				80BD13E1268A986200776CB7 /* BTPayPalNativeRequest.swift in Sources */,
-				80BD13DA268A986200776CB7 /* File.swift in Sources */,
 				80BD13D7268A986200776CB7 /* BTPayPalNativeTokenizationClient.swift in Sources */,
 				80BD13E2268A986200776CB7 /* BTPayPalNativeVaultRequest.swift in Sources */,
 				80BD13DB268A986200776CB7 /* BTPayPalNativeCheckoutRequest.swift in Sources */,
