@@ -14,14 +14,14 @@ class BraintreePayPalNative {
             return
         }
         print(id)
-
-        // use BT PayPal module
-        let nonce = BTPayPalAccountNonce.init(nonce: "woek")
-
-        // use BT Core
-        let apiClient = BTAPIClient.init(authorization: "INITME")
-
-        let driver = BTPayPalDriver.init(apiClient: apiClient!)
+//
+//        // use BT PayPal module
+//        let nonce = BTPayPalAccountNonce.init(nonce: "woek")
+//
+//        // use BT Core
+//        let apiClient = BTAPIClient.init(authorization: "INITME")
+//
+//        let driver = BTPayPalDriver.init(apiClient: apiClient!)
 
     }
 }
