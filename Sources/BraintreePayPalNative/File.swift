@@ -5,7 +5,7 @@ import BraintreePayPal
 //import BraintreeCore
 #endif
 
-class DummySwift {
+class BraintreePayPalNative {
     func thisTestRocks() {
 
         // use native XO module
