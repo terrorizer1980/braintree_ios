@@ -5,6 +5,6 @@ import BraintreePayPal
 /**
  Contains information about a PayPal payment method.
  */
-@objc class BTPayPalNativeAccountNonce: BTPayPalAccountNonce {
+@objc public class BTPayPalNativeAccountNonce: BTPayPalAccountNonce {
 
 }

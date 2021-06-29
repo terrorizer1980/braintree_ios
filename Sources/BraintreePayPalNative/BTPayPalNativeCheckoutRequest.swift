@@ -4,7 +4,7 @@ import BraintreePayPal
 /**
  Options for the PayPal Checkout and PayPal Checkout with Vault flows.
  */
-@objc class BTPayPalNativeCheckoutRequest: BTPayPalCheckoutRequest, BTPayPalNativeRequest {
+@objc public class BTPayPalNativeCheckoutRequest: BTPayPalCheckoutRequest, BTPayPalNativeRequest {
 
     // MARK: - Public
 
