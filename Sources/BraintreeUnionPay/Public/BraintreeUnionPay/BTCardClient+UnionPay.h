@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see BTCardClient -tokenizeCard:options:completion:
 */
 - (void)enrollCard:(BTCardRequest *)request
-        completion:(void (^)(NSString * _Nullable enrollmentID, BOOL smsCodeRequired, NSError * _Nullable error))completion;
+        completion:(void (^)(NSString * _Nullable enrollmentID, BOOL smsCodeRequired, NSError * _Nullable error))completion __attribute__((deprecated));
 
 @end
 
